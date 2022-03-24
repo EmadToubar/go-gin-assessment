@@ -16,4 +16,7 @@ Login:
     ☐ Implement JWT authentication @low
 
 General:
-    Follow this tutorial, https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121
+    ☐ Follow these tutorials:
+        https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121
+        https://flaviocopes.com/golang-tutorial-rest-api/
+        https://blog.techchee.com/build-a-rest-api-with-golang-gin-and-mysql/
