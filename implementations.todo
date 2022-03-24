@@ -1,0 +1,16 @@
+Doctors:
+    ☐ Implement Patient array object for the Doctor model
+    ☐ Implement doctor availability @high 
+
+Patients:
+    ☐ Implement patient history function @high 
+Appointments:
+    ☐ Implement Patient and Doctor relation within each Appointment model (using SQL JOIN) @high 
+
+Registration:
+    ☐ Implement registerration routes and functions @critical 
+    ☐ Implement adding a Doctor/Patient automatically to the DB when the user registers @low 
+
+Login:
+    ☐ Implement login routes and functions @critical
+    ☐ Implement JWT authentication @low
