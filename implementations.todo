@@ -14,3 +14,6 @@ Registration:
 Login:
     ☐ Implement login routes and functions @critical
     ☐ Implement JWT authentication @low
+
+General:
+    Follow this tutorial, https://levelup.gitconnected.com/crud-restful-api-with-go-gorm-jwt-postgres-mysql-and-testing-460a85ab7121
