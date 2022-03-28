@@ -24,14 +24,14 @@ CREATE TABLE IF NOT EXISTS appointment (
 
 );
 
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE IF NOT EXISTS users (
     id int,
 	name text,
 	email text,
-	password text,
-	role text,
-
+	password int,
+	role text
 
 );
+
 
 	`

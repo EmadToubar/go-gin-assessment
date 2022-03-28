@@ -39,3 +39,18 @@ GET http://localhost:8080/patients
 
 //Testing the "Get Patient by ID" endpoint
 GET http://localhost:8080/patients/3
+
+###
+
+//Testing the "Login" endpoint
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+    "name":"",
+    "password":""
+}
+
+###
+
+//Testing the "Register" endpoint
