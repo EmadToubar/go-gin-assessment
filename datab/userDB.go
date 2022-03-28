@@ -26,7 +26,7 @@ func AddUsers(u models.User) {
 	defer db.Close()
 
 	insert, err := db.Queryx(
-		"INSERT INTO user (id, name, email, password, role) VALUES (($1),($2),($3),($4),($5))",
+		"INSERT INTO users (id, name, email, password, role) VALUES (($1),($2),($3),($4),($5))",
 		u.ID, u.Name, u.Email, u.Password, u.Role)
 
 	// if there is an error inserting, handle it
@@ -38,6 +38,7 @@ func AddUsers(u models.User) {
 
 }
 
+//Function for getting user by username
 func GetUser(username string) *models.User {
 
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
@@ -51,7 +52,7 @@ func GetUser(username string) *models.User {
 
 	u := &models.User{}
 
-	results, err := db.Queryx("SELECT * FROM user where name=($1)", username)
+	results, err := db.Queryx("SELECT * FROM users where name=($1)", username)
 
 	if err != nil {
 		fmt.Println("Err", err.Error())
@@ -71,7 +72,8 @@ func GetUser(username string) *models.User {
 	return u
 }
 
-func createAccount() {
+//Function for creating user account
+func CreateAccount() {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
@@ -94,21 +96,12 @@ func createAccount() {
 		AddPatients(patient)
 		AddUsers(user)
 
-		// insert, err := db.Queryx(
-		// 	"INSERT INTO patient (id, name, role) VALUES (($1),($2),($3))",
-		// 	patient.ID, patient.Name, patient.Role)
-
-		// // if there is an error inserting, handle it
-		// if err != nil {
-		// 	panic(err.Error())
-		// }
-
-		//defer insert.Close()
 	}
 
 }
 
-func userLogin(username string, pass string) map[string]interface{} {
+//Function for logging in the user
+func UserLogin(username string, pass string) map[string]interface{} {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
@@ -156,4 +149,41 @@ func userLogin(username string, pass string) map[string]interface{} {
 	response["data"] = responseUser
 
 	return response
+}
+
+func UserRegister(username string, email string, pass string) map[string]interface{} {
+	valid := helpers.Validation(
+		[]models.Validation{
+			{Value: username, Valid: "username"},
+			{Value: email, Valid: "email"},
+			{Value: pass, Valid: "password"},
+		})
+
+	if valid {
+
+		db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+		if err != nil {
+			log.Fatalln(err)
+		} //Connecting to database
+
+		db.MustExec(schema)
+
+		defer db.Close()
+
+		generatedPassword := helpers.HashAndSalt([]byte(pass))
+		user := models.User{Name: username, Email: email, Password: generatedPassword}
+
+		patient := models.Patient{ID: "50", Name: username, Role: "PATIENT"}
+
+		AddPatients(patient)
+		AddUsers(user)
+
+		//patients:= []models.Patient{}
+
+		return map[string]interface{}{"message": "User registered."}
+
+	} else {
+		return map[string]interface{}{"message": "Invalid values."}
+	}
+
 }

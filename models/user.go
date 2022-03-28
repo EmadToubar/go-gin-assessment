@@ -7,3 +7,13 @@ type User struct {
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
+
+type Login struct {
+	Username string
+	Password string
+}
+
+type Validation struct {
+	Value string
+	Valid string
+}
