@@ -16,6 +16,6 @@ func main() {
 	router.GET("/patients/:id", handlers.HandleGetPatient)            //Route to get a specific patient by their ID
 	router.POST("/patients", handlers.HandleAddPatients)              //Route to add a patient
 	router.POST("/appointments/book", handlers.HandleAddAppointments) //Route to book an appointment
-	router.POST("/login", handlers.HandleUserLogin)                   //Route to login
-	router.Run("localhost:8080")                                      //Route to run the server on port 8080
+	//router.POST("/login", handlers.HandleUserLogin)                   //Route to login
+	router.Run("localhost:8080") //Route to run the server on port 8080
 }
