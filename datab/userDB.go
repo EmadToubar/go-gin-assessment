@@ -5,9 +5,12 @@ import (
 	"api_assessment/models"
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //Function to add a doctor to the DB
@@ -97,90 +100,90 @@ func CreateAccount() {
 
 }
 
-// //Function for logging in the user
-// func UserLogin(username string, pass string) map[string]interface{} {
-// 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	} //Connecting to database
+//Function for logging in the user
+func UserLogin(username string, pass string) map[string]interface{} {
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	} //Connecting to database
 
-// 	db.MustExec(schema)
+	db.MustExec(schema)
 
-// 	defer db.Close()
+	defer db.Close()
 
-// 	user := &models.User{}
+	user := &models.User{}
 
-// 	if GetUser(username) == nil {
-// 		return map[string]interface{}{"message": "User not found"}
-// 	} else {
-// 		user = GetUser(username)
-// 	}
+	if GetUser(username) == nil {
+		return map[string]interface{}{"message": "User not found"}
+	} else {
+		user = GetUser(username)
+	}
 
-// 	passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
+	passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 
-// 	if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {
-// 		return map[string]interface{}{"message": "Password incorrect"}
-// 	}
+	if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {
+		return map[string]interface{}{"message": "Password incorrect"}
+	}
 
-// 	// patients:= &models.Patient{}
-// 	// patients = GetPatient(user.ID)
+	// patients:= &models.Patient{}
+	// patients = GetPatient(user.ID)
 
-// 	responseUser := &models.User{
-// 		ID:       user.ID,
-// 		Name:     user.Name,
-// 		Email:    user.Email,
-// 		Password: user.Password,
-// 		Role:     user.Role,
-// 	}
+	responseUser := &models.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+		Role:     user.Role,
+	}
 
-// 	tokenContent := jwt.MapClaims{
-// 		"user_id": user.ID,
-// 		"role":    user.Role,
-// 		"expiry":  time.Now().Add(time.Minute ^ 60).Unix(),
-// 	}
-// 	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tokenContent)
-// 	token, err := jwtToken.SignedString([]byte("TokenPassword"))
+	tokenContent := jwt.MapClaims{
+		"user_id": user.ID,
+		"role":    user.Role,
+		"expiry":  time.Now().Add(time.Minute ^ 60).Unix(),
+	}
+	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tokenContent)
+	token, err := jwtToken.SignedString([]byte("TokenPassword"))
 
-// 	var response = map[string]interface{}{"message": "User login successful"}
-// 	response["jwt"] = token
-// 	response["data"] = responseUser
+	var response = map[string]interface{}{"message": "User login successful"}
+	response["jwt"] = token
+	response["data"] = responseUser
 
-// 	return response
-// }
+	return response
+}
 
-// func UserRegister(username string, email string, pass string) map[string]interface{} {
-// 	valid := helpers.Validation(
-// 		[]models.Validation{
-// 			{Value: username, Valid: "username"},
-// 			{Value: email, Valid: "email"},
-// 			{Value: pass, Valid: "password"},
-// 		})
+func UserRegister(username string, email string, pass string) map[string]interface{} {
+	valid := helpers.Validation(
+		[]models.Validation{
+			{Value: username, Valid: "username"},
+			{Value: email, Valid: "email"},
+			{Value: pass, Valid: "password"},
+		})
 
-// 	if valid {
+	if valid {
 
-// 		db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-// 		if err != nil {
-// 			log.Fatalln(err)
-// 		} //Connecting to database
+		db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+		if err != nil {
+			log.Fatalln(err)
+		} //Connecting to database
 
-// 		db.MustExec(schema)
+		db.MustExec(schema)
 
-// 		defer db.Close()
+		defer db.Close()
 
-// 		generatedPassword := helpers.HashAndSalt([]byte(pass))
-// 		user := models.User{Name: username, Email: email, Password: generatedPassword}
+		generatedPassword := helpers.HashAndSalt([]byte(pass))
+		user := models.User{Name: username, Email: email, Password: generatedPassword}
 
-// 		patient := models.Patient{ID: "50", Name: username, Role: "PATIENT"}
+		patient := models.Patient{ID: "50", Name: username, Role: "PATIENT"}
 
-// 		AddPatients(patient)
-// 		AddUsers(user)
+		AddPatients(patient)
+		AddUsers(user)
 
-// 		//patients:= []models.Patient{}
+		//patients:= []models.Patient{}
 
-// 		return map[string]interface{}{"message": "User registered."}
+		return map[string]interface{}{"message": "User registered."}
 
-// 	} else {
-// 		return map[string]interface{}{"message": "Invalid values."}
-// 	}
+	} else {
+		return map[string]interface{}{"message": "Invalid values."}
+	}
 
-// }
+}
