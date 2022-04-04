@@ -35,3 +35,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 	`
+
+func GiveSchema() *string {
+	return &schema
+}
