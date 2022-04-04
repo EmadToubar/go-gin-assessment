@@ -25,6 +25,13 @@ func AddAppointments(appointment models.Appointment) *models.Appointment {
 	res.SchDoctor = *GetDoctor(appointment.DoctorID)
 	log.Println(res) //Testing to see if fetching is working
 
+	if(appointment.Duration > 120){
+		//Code to exit
+	}
+	else{
+		//Insert rest of code here when everythign works
+	}
+
 	insert, err := db.Queryx(
 		"INSERT INTO appointment (id, doctorid, patientid, duration, timestart, timeend) VALUES (($1),($2),($3), ($4), ($5), ($6))",
 		appointment.ID, appointment.DoctorID, appointment.PatientID, appointment.Duration, appointment.TimeStart, appointment.TimeEnd)
