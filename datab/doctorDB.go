@@ -91,9 +91,16 @@ func AddDoctors(doctor models.Doctor) {
 
 	defer db.Close()
 
+	defaultSlots := [...]string{
+		"8:00",
+		"8:15",
+		"8:30",
+		"8:45",
+		"9:00"}
+
 	insert, err := db.Queryx(
-		"INSERT INTO doctor (id, name, role) VALUES (($1),($2),($3))",
-		doctor.ID, doctor.Name, doctor.Role)
+		"INSERT INTO doctor (id, name, role, availability) VALUES (($1),($2),($3), ($4))",
+		doctor.ID, doctor.Name, doctor.Role, defaultSlots)
 
 	// if there is an error inserting, handle it
 	if err != nil {
@@ -102,4 +109,23 @@ func AddDoctors(doctor models.Doctor) {
 
 	defer insert.Close()
 
+}
+
+func checkAvailability(doctors models.Doctor, slot string) {
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	} //Connecting to database
+
+	db.MustExec(schema)
+
+	defer db.Close()
+
+	for i := 0; i < len(doctors.Availability); i++ {
+		if doctors.Availability[i] == slot {
+			log.Println("Slot is taken") //Placeholder code
+		}
+	}
+
+	log.Println("Slot is free") //Placeholder code
 }
