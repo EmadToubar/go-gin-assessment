@@ -5,6 +5,7 @@ import (
 	"api_assessment/models"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -218,4 +219,57 @@ func TestGetUser(user models.User) (*models.User, *models.RestErr) {
 
 	resultWp := &models.User{ID: result.ID, Name: result.Name, Email: result.Email, Role: result.Role}
 	return resultWp, nil
+}
+
+func (user *models.User) Validate() *models.RestErr {
+	user.Name = strings.TrimSpace(user.Name)
+	user.Email = strings.TrimSpace(user.Email)
+	if user.Email == "" {
+		return models.NewBadRequestError("Invalid Email Address")
+	}
+	if user.Password == "" {
+		return models.NewBadRequestError("Invalid Password")
+	}
+	return nil
+}
+
+func (user *models.User) Save() *models.RestErr {
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	} //Connecting to database
+
+	db.MustExec(*GiveSchema())
+
+	defer db.Close()
+
+	insert, err := db.Queryx(
+		"INSERT INTO users (id, name, email, password, role) VALUES (($1),($2),($3), ($4), ($5))",
+		user.ID, user.Name, user.Email, user.Password, "PATIENT")
+
+	if insert == nil {
+
+	}
+
+	return nil
+
+}
+
+func (user *models.User) GetByEmail() *models.RestErr {
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	} //Connecting to database
+
+	db.MustExec(*GiveSchema())
+
+	defer db.Close()
+
+	results, err := db.Queryx("SELECT * FROM userrs where email=($1)", user)
+	if err != nil {
+		return models.NewInternalServerError("Invalid Email")
+	}
+
+	results.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role)
+
 }
