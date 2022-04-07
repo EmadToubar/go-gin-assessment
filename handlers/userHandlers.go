@@ -3,6 +3,7 @@ package handlers
 import (
 	"api_assessment/datab"
 	"api_assessment/models"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -39,6 +40,8 @@ func Register(c *gin.Context) {
 		c.JSON(err.Status, err)
 		return
 	}
+
+	log.Println("Testing user binding in Register handler:", user)
 
 	result, saveErr := datab.CreateUser(user)
 	if saveErr != nil {

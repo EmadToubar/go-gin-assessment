@@ -47,8 +47,8 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-    "name":"A",
-    "password":"t"
+    "name":"Tester",
+    "password":"testpass"
 }
 
 ###
@@ -65,4 +65,19 @@ Content-Type: application/json
     "duration": "25",
     "timestart": "1",
     "timeend": "2"
+}
+
+###
+//Testing registration endpoint
+
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+"ID":"1",
+"Name": "Tester",
+"Email":"tester@email.com",
+"Password": "testpass",
+"Role": "PATIENT"
+
 }
