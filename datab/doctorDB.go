@@ -111,7 +111,7 @@ func AddDoctors(doctor models.Doctor) {
 
 }
 
-func checkAvailability(doctors models.Doctor, slot string) {
+func CheckAvailability(doctors models.Doctor, slot string) bool {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
@@ -124,8 +124,37 @@ func checkAvailability(doctors models.Doctor, slot string) {
 	for i := 0; i < len(doctors.Availability); i++ {
 		if doctors.Availability[i] == slot {
 			log.Println("Slot is taken") //Placeholder code
+			return false
 		}
 	}
-
 	log.Println("Slot is free") //Placeholder code
+	return true
+}
+
+func removeSlot(r []string, s string) []string {
+	for i := 0; i < len(r); i++ {
+		if r[i] == s {
+			copy(r[i:], r[i+1:])
+			r[len(r)-1] = ""
+			r = r[:len(r)-1]
+		}
+	}
+	return r
+}
+
+func BookSlot(doctors models.Doctor, slot string) {
+	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	} //Connecting to database
+
+	db.MustExec(schema)
+
+	defer db.Close()
+	if CheckAvailability(doctors, slot) == true {
+		doctors.Availability = removeSlot(doctors.Availability, slot)
+	} else {
+		log.Println("Slot already booked.") //Placeholder code
+	}
+
 }
