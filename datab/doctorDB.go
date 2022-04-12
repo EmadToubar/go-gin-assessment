@@ -91,16 +91,20 @@ func AddDoctors(doctor models.Doctor) {
 
 	defer db.Close()
 
-	defaultSlots := [...]string{
-		"8:00",
-		"8:15",
-		"8:30",
-		"8:45",
-		"9:00"}
+	// defaultSlots := [...]string{
+	// 	"8:00",
+	// 	"8:15",
+	// 	"8:30",
+	// 	"8:45",
+	// 	"9:00"}
+
+	// insert, err := db.Queryx(
+	// 	"INSERT INTO doctor (id, name, role, availability) VALUES (($1),($2),($3), ARRAY['8:00', '8:15','8:30','8:45', '9:00', '9:15','9:30','9:45', '10:00', '10:15','10:30','10:45','11:00', '11:15','11:30','11:45','12:00', '12:15','12:30','12:45', '1:00', '1:15','1:30','1:45','2:00', '2:15','2:30','2:45', '3:00', '3:15','3:30','3:45', '4:00', '4:15','4:30','4:45', '5:00', '5:15','5:30','5:45', '6:00'])",
+	// 	doctor.ID, doctor.Name, doctor.Role)
 
 	insert, err := db.Queryx(
-		"INSERT INTO doctor (id, name, role, availability) VALUES (($1),($2),($3), ($4))",
-		doctor.ID, doctor.Name, doctor.Role, defaultSlots)
+		"INSERT INTO doctor (id, name, role) VALUES (($1),($2),($3))",
+		doctor.ID, doctor.Name, doctor.Role)
 
 	// if there is an error inserting, handle it
 	if err != nil {
@@ -121,12 +125,12 @@ func CheckAvailability(doctors models.Doctor, slot string) bool {
 
 	defer db.Close()
 
-	for i := 0; i < len(doctors.Availability); i++ {
-		if doctors.Availability[i] == slot {
-			log.Println("Slot is taken") //Placeholder code
-			return false
-		}
-	}
+	// for i := 0; i < len(doctors.Availability); i++ {
+	// 	if doctors.Availability[i] == slot {
+	// 		log.Println("Slot is taken") //Placeholder code
+	// 		return false
+	// 	}
+	// }
 	log.Println("Slot is free") //Placeholder code
 	return true
 }
@@ -151,10 +155,10 @@ func BookSlot(doctors models.Doctor, slot string) {
 	db.MustExec(schema)
 
 	defer db.Close()
-	if CheckAvailability(doctors, slot) == true {
-		doctors.Availability = removeSlot(doctors.Availability, slot)
-	} else {
-		log.Println("Slot already booked.") //Placeholder code
-	}
+	// if CheckAvailability(doctors, slot) == true {
+	// 	doctors.Availability = removeSlot(doctors.Availability, slot)
+	// } else {
+	// 	log.Println("Slot already booked.") //Placeholder code
+	// }
 
 }

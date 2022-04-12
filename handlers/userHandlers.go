@@ -12,25 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func HandleUserLogin(c *gin.Context) {
-// 	body, err := ioutil.ReadAll(c.Request.Body)
-// 	if err == nil {
-
-// 	}
-
-// 	var formattedBody models.Login
-// 	err = json.Unmarshal(body, &formattedBody)
-
-// 	login := datab.UserLogin(formattedBody.Username, formattedBody.Password)
-
-// 	if login["message"] == "User login successful" {
-// 		resp := login
-// 		c.IndentedJSON(http.StatusCreated, resp)
-// 	} else {
-
-// 	}
-// }
-
 //Prototype Register Function
 func Register(c *gin.Context) {
 	var user models.User
@@ -82,4 +63,17 @@ func Login(c *gin.Context) {
 
 	c.SetCookie("jwt", token, 3600, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, result)
+}
+
+//Test Function
+func HandleAddUser(c *gin.Context) {
+	var use models.User
+
+	if err := c.BindJSON(&use); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	} else {
+		datab.AddUsers(use)
+
+		c.IndentedJSON(http.StatusCreated, use)
+	}
 }

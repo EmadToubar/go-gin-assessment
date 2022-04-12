@@ -43,3 +43,15 @@ func HandleAddDoctors(c *gin.Context) {
 		c.IndentedJSON(http.StatusCreated, doc)
 	}
 }
+
+//Test Function for Slots
+func HandleBookSlot(c *gin.Context) {
+	slot := c.Param("slot")
+	docid := c.Param("id")
+
+	var doc models.Doctor
+
+	doc = *datab.GetDoctor(docid)
+	datab.BookSlot(doc, slot)
+
+}

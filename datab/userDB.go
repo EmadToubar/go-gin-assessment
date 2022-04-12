@@ -1,7 +1,6 @@
 package datab
 
 import (
-	"api_assessment/helpers"
 	"api_assessment/models"
 	"fmt"
 	"log"
@@ -69,34 +68,6 @@ func GetUser(username string) *models.User {
 	}
 
 	return u
-}
-
-//Function for creating user account
-func CreateAccount() {
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
-
-	db.MustExec(schema)
-
-	defer db.Close()
-
-	users := [1]models.User{
-		{Name: "Test", Email: "dummy@test.com"},
-	}
-
-	for i := 0; i < len(users); i++ {
-		generatedPassword := helpers.HashAndSalt([]byte(users[i].Name))
-		user := models.User{Name: users[i].Name, Email: users[i].Email, Password: generatedPassword}
-
-		patient := models.Patient{ID: "50", Name: "Tester", Role: "PATIENT"}
-
-		AddPatients(patient)
-		AddUsers(user)
-
-	}
-
 }
 
 func CreateUser(user models.User) (*models.User, *models.RestErr) {
@@ -169,6 +140,7 @@ func Save(user *models.User) *models.RestErr {
 
 }
 
+//Function to fetch a user by their email
 func GetByEmail(user *models.User) *models.RestErr {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
