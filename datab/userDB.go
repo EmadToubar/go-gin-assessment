@@ -90,7 +90,7 @@ func CreateUser(user models.User) (*models.User, *models.RestErr) {
 }
 
 func TestGetUser(user models.User) (*models.User, *models.RestErr) {
-	result := &models.User{Email: user.Email}
+	result := GetUser(user.Name)
 
 	if err := GetByEmail(result); err != nil {
 		return nil, err
@@ -151,7 +151,8 @@ func GetByEmail(user *models.User) *models.RestErr {
 
 	defer db.Close()
 
-	results, err := db.Queryx("SELECT * FROM userrs where email=($1)", user)
+	results, err := db.Queryx("SELECT * FROM users where email=($1)", user.Email)
+
 	if err != nil {
 		return models.NewInternalServerError("Invalid Email")
 	}

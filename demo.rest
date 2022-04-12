@@ -31,7 +31,7 @@ GET http://localhost:8080/doctors
 
 ###
 //Testing the "Get Doctor by ID" endpoint
-GET http://localhost:8080/doctors/1
+GET http://localhost:8080/doctors/2
 
 ###
 //Testing the "Add Patient" endpoint
@@ -105,7 +105,7 @@ Content-Type: application/json
     "id": 3,
     "doctorid": "2",
     "patientid": "3",
-    "duration": 30,
+    "duration": 130,
     "timestart": "1:00",
     "timeend": "1:30"
 }
@@ -123,3 +123,28 @@ GET http://localhost:8080/appointments/view/patient/3
 ###
 //Viewing the doctor with the most appointments
 GET http://localhost:8080/appointments/view/max
+
+###
+//Testing the "Login" endpoint
+POST http://localhost:8080/login/patient
+Content-Type: application/json
+
+{
+    "Email":"tester@email.com",
+    "Password":"testpass"
+}
+
+###
+//Testing registration endpoint
+
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+"ID":"1",
+"Name": "Tester",
+"Email":"tester@email.com",
+"Password": "testpass",
+"Role": "PATIENT"
+
+}
