@@ -25,8 +25,8 @@ POST http://localhost:8080/patients
 Content-Type: application/json
 
 {
-    "id": "1",
-    "name": "Mr. Z",
+    "id": "3",
+    "name": "Mr. H",
     "role": "PATIENT"
 }
 
@@ -47,10 +47,9 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-    "name":"Tester",
-    "password":"testpass"
+    "Email":"tester@email.com",
+    "Password":"testpass"
 }
-
 ###
 
 //Testing the "Appointment Booking" endpoint
@@ -59,10 +58,10 @@ Content-Type: application/json
 
 {
     "time": "2",
-    "id": 3,
+    "id": 2,
     "doctorid": "1",
-    "patientid": "1",
-    "duration": "25",
+    "patientid": "3",
+    "duration": 30,
     "timestart": "1",
     "timeend": "2"
 }
@@ -81,3 +80,32 @@ Content-Type: application/json
 "Role": "PATIENT"
 
 }
+
+###
+
+POST http://localhost:8080/testuseradd
+Content-Type: application/json
+
+{
+"ID":"1",
+"Name": "Tester",
+"Email":"tester@email.com",
+"Password": "$2a$14$nX6.hzvPp/qqQbIc.WG5Lej1nSKRSi9hrA01m/8Mrd24bDAxBheM6",
+"Role": "PATIENT"
+
+}
+
+###
+PATCH http://localhost:8080/book/1/8:30
+
+###
+GET http://localhost:8080/appointments/view/all
+
+###
+GET http://localhost:8080/appointments/view/23
+
+###
+GET http://localhost:8080/appointments/view/patient/3
+
+###
+GET http://localhost:8080/appointments/view/max
