@@ -166,7 +166,7 @@ func GetMaxAppointments() []models.CountResponse {
 
 	defer db.Close()
 
-	results, err := db.Queryx("SELECT doctorid, COUNT(doctorid) FROM appointment GROUP BY doctorid LIMIT 1 ")
+	results, err := db.Queryx("SELECT doctorid, COUNT(doctorid) FROM appointment GROUP BY doctorid ORDER BY COUNT(doctorid) DESC LIMIT 1 ")
 
 	if err != nil {
 		fmt.Println("Err", err.Error())

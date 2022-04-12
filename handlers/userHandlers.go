@@ -5,7 +5,6 @@ import (
 	"api_assessment/models"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -50,7 +49,7 @@ func Login(c *gin.Context) {
 	if result == nil {
 	}
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(1), //Change 1 later with int(result.ID)
+		Issuer:    result.ID, //Change 1 later with int(result.ID)
 		ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 	})
 

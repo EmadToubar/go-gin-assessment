@@ -1,0 +1,125 @@
+//Testing the "Add Doctor" endpoint
+POST http://localhost:8080/doctors
+Content-Type: application/json
+
+{
+    "id": "1",
+    "name": "Strange",
+    "role": "DOCTOR"
+}
+###
+POST http://localhost:8080/doctors
+Content-Type: application/json
+
+{
+    "id": "2",
+    "name": "Tester",
+    "role": "DOCTOR"
+}
+###
+POST http://localhost:8080/doctors
+Content-Type: application/json
+
+{
+    "id": "3",
+    "name": "Dummy",
+    "role": "DOCTOR"
+}
+###
+//Testing the "Get All Doctors" endpoint 
+GET http://localhost:8080/doctors
+
+###
+//Testing the "Get Doctor by ID" endpoint
+GET http://localhost:8080/doctors/1
+
+###
+//Testing the "Add Patient" endpoint
+POST http://localhost:8080/patients
+Content-Type: application/json
+
+{
+    "id": "1",
+    "name": "Mr. A",
+    "role": "PATIENT"
+}
+###
+POST http://localhost:8080/patients
+Content-Type: application/json
+
+{
+    "id": "2",
+    "name": "Mr. B",
+    "role": "PATIENT"
+}
+###
+POST http://localhost:8080/patients
+Content-Type: application/json
+
+{
+    "id": "3",
+    "name": "Mr. C",
+    "role": "PATIENT"
+}
+###
+//Testing the "Get All Patients" endpoint 
+GET http://localhost:8080/patients
+
+###
+//Testing the "Get Patient by ID" endpoint
+GET http://localhost:8080/patients/1
+
+###
+//Testing the "Appointment Booking" endpoint
+POST http://localhost:8080/appointments/book
+Content-Type: application/json
+
+{
+    "time": "3:00",
+    "id": 1,
+    "doctorid": "1",
+    "patientid": "1",
+    "duration": 60,
+    "timestart": "8:00",
+    "timeend": "9:00"
+}
+###
+POST http://localhost:8080/appointments/book
+Content-Type: application/json
+
+{
+    "time": "4:00",
+    "id": 2,
+    "doctorid": "1",
+    "patientid": "2",
+    "duration": 120,
+    "timestart": "9:00",
+    "timeend": "11:00"
+}
+###
+POST http://localhost:8080/appointments/book
+Content-Type: application/json
+
+{
+    "time": "5:00",
+    "id": 3,
+    "doctorid": "2",
+    "patientid": "3",
+    "duration": 30,
+    "timestart": "1:00",
+    "timeend": "1:30"
+}
+###
+//Showing that the appointments are all in the DB
+GET http://localhost:8080/appointments/view/all
+###
+//Viewing a specific appointment by its ID
+###
+GET http://localhost:8080/appointments/view/2
+###
+//Viewing a patient's appointment history
+###
+GET http://localhost:8080/appointments/view/patient/3
+###
+//Viewing the doctor with the most appointments
+GET http://localhost:8080/appointments/view/max
