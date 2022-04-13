@@ -9,8 +9,24 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type PatientDB interface {
+	GetPatients() []models.Patient
+	GetPatient(patid string) *models.Patient
+	AddPatients(patient models.Patient)
+}
+
+type patientDB struct {
+	db *sqlx.DB
+}
+
+func PatientDBProvider(db *sqlx.DB) PatientDB {
+	return &patientDB{
+		db: db,
+	}
+}
+
 //Function to list all the patients in the DB
-func GetPatients() []models.Patient {
+func (pd *patientDB) GetPatients() []models.Patient {
 
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
@@ -45,7 +61,7 @@ func GetPatients() []models.Patient {
 }
 
 //Function to get a patient by their ID from the DB
-func GetPatient(patid string) *models.Patient {
+func (pd *patientDB) GetPatient(patid string) *models.Patient {
 
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
@@ -79,7 +95,7 @@ func GetPatient(patid string) *models.Patient {
 }
 
 //Function to add a patient to the DB
-func AddPatients(patient models.Patient) {
+func (pd *patientDB) AddPatients(patient models.Patient) {
 
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {

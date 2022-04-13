@@ -4,6 +4,7 @@ import (
 	"api_assessment/models"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -11,67 +12,56 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//Function to add a doctor to the DB
-func AddUsers(u models.User) {
+type userDB struct {
+	DB *sqlx.DB
+}
 
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
+type UserDB interface {
+	AddUsers(u models.User)
+	GetUser(username string) (*models.User, error)
+	CreateUser(user models.User) (*models.User, *models.RestErr)
+	TestGetUser(user models.User) (*models.User, *models.RestErr)
+	Validate(user *models.User) *models.RestErr
+	Save(user *models.User) *models.RestErr
+	GetByEmail(user *models.User) *models.RestErr
+}
 
-	db.MustExec(schema)
-
-	defer db.Close()
-
-	insert, err := db.Queryx(
-		"INSERT INTO users (id, name, email, password, role) VALUES (($1),($2),($3),($4),($5))",
-		u.ID, u.Name, u.Email, u.Password, u.Role)
-
-	// if there is an error inserting, handle it
-	if err != nil {
-		panic(err.Error())
+func UserDBProvider(ctx *sqlx.DB) UserDB {
+	return &userDB{
+		DB: ctx,
 	}
+}
 
-	defer insert.Close()
-
+//Function to add a doctor to the DB
+func (us *userDB) AddUsers(u models.User) {
+	if insert, err := us.DB.Queryx(
+		"INSERT INTO users (id, name, email, password, role) VALUES (($1),($2),($3),($4),($5))",
+		u.ID, u.Name, u.Email, u.Password, u.Role); err != nil {
+		panic(err.Error())
+	} else {
+		insert.Close()
+	}
 }
 
 //Function for getting user by username
-func GetUser(username string) *models.User {
-
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
-
-	db.MustExec(schema)
-
-	defer db.Close()
-
+func (us *userDB) GetUser(username string) (*models.User, error) {
+	// db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable") this way you need to connect to your database only once
 	u := &models.User{}
-
-	results, err := db.Queryx("SELECT * FROM users where name=($1)", username)
-
-	if err != nil {
+	if results, err := us.DB.Queryx("SELECT * FROM users where name=($1)", username); err != nil {
 		fmt.Println("Err", err.Error())
-		return nil
-	}
-
-	if results.Next() {
-		err = results.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.Role)
-		if err != nil {
-			return nil
-		}
+		return nil, err
 	} else {
-
-		return nil
+		if results.Next() {
+			if err = results.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.Role); err != nil {
+				return nil, err
+			}
+		}
 	}
-
-	return u
+	return u, nil
 }
 
-func CreateUser(user models.User) (*models.User, *models.RestErr) {
-	if err := Validate(&user); err != nil {
+func (us *userDB) CreateUser(user models.User) (*models.User, *models.RestErr) {
+	if err := us.Validate(&user); err != nil {
 		return nil, err
 	}
 
@@ -82,29 +72,35 @@ func CreateUser(user models.User) (*models.User, *models.RestErr) {
 
 	user.Password = string(pwSlice[:])
 
-	if err := Save(&user); err != nil {
+	if err := us.Save(&user); err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func TestGetUser(user models.User) (*models.User, *models.RestErr) {
-	result := GetUser(user.Name)
-
-	if err := GetByEmail(result); err != nil {
-		return nil, err
+func (us *userDB) TestGetUser(user models.User) (*models.User, *models.RestErr) {
+	if result, err := us.GetUser(user.Name); err != nil {
+		return nil, &models.RestErr{
+			Status:  http.StatusInternalServerError,
+			Message: "Internal Server Error",
+			Error:   "Error Retriving user " + user.Name,
+		}
+	} else {
+		if err := us.GetByEmail(result); err != nil {
+			return nil, err
+		} else {
+			if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password)); err != nil {
+				return nil, models.NewBadRequestError("Failed to Decrypt Password")
+			} else {
+				resultWp := &models.User{ID: result.ID, Name: result.Name, Email: result.Email, Role: result.Role}
+				return resultWp, nil
+			}
+		}
 	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password)); err != nil {
-		return nil, models.NewBadRequestError("Failed to Decrypt Password")
-	}
-
-	resultWp := &models.User{ID: result.ID, Name: result.Name, Email: result.Email, Role: result.Role}
-	return resultWp, nil
 }
 
-func Validate(user *models.User) *models.RestErr {
+func (us *userDB) Validate(user *models.User) *models.RestErr {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
 	if user.Email == "" {
@@ -116,7 +112,7 @@ func Validate(user *models.User) *models.RestErr {
 	return nil
 }
 
-func Save(user *models.User) *models.RestErr {
+func (us *userDB) Save(user *models.User) *models.RestErr {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
@@ -141,7 +137,7 @@ func Save(user *models.User) *models.RestErr {
 }
 
 //Function to fetch a user by their email
-func GetByEmail(user *models.User) *models.RestErr {
+func (us *userDB) GetByEmail(user *models.User) *models.RestErr {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)

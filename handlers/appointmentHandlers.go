@@ -3,6 +3,7 @@ package handlers
 import (
 	"api_assessment/datab"
 	"api_assessment/models"
+	"api_assessment/service"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,7 +11,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandleAddAppointments(c *gin.Context) {
+type AppointmentHandler interface {
+	HandleGetAppointments(c *gin.Context)
+	HandleGetAppointment(c *gin.Context)
+	HandleGetPatientHistory(c *gin.Context)
+	HandleGetMaxAppointments(c *gin.Context)
+	SetupRoutes(r *gin.RouterGroup)
+}
+
+type appointmentHandler struct {
+	service service.AppointmentService
+}
+
+func AppointmentHandlerProvider(service service.AppointmentService) AppointmentHandler {
+	return &appointmentHandler{
+		service: service,
+	}
+}
+
+func (ah *appointmentHandler) SetupRoutes(r *gin.RouterGroup) {
+	r.GET("/appointments", ah.HandleGetAppointments)
+	r.GET("/appointments/:id", ah.HandleGetAppointment)
+	r.GET("/appointments/:id/history", ah.HandleGetPatientHistory)
+	r.GET("/appointments/max", ah.HandleGetMaxAppointments)
+}
+
+func (ah *appointmentHandler) HandleAddAppointments(c *gin.Context) {
 	var appoint models.Appointment
 
 	if err := c.BindJSON(&appoint); err != nil {
@@ -24,7 +50,7 @@ func HandleAddAppointments(c *gin.Context) {
 	}
 }
 
-func HandleGetAppointments(c *gin.Context) {
+func (ah *appointmentHandler) HandleGetAppointments(c *gin.Context) {
 	appoint := datab.GetAppointments()
 
 	if appoint == nil || len(appoint) == 0 {
@@ -34,7 +60,7 @@ func HandleGetAppointments(c *gin.Context) {
 	}
 }
 
-func HandleGetAppointment(c *gin.Context) {
+func (ah *appointmentHandler) HandleGetAppointment(c *gin.Context) {
 	appointid := c.Param("id")
 	appointidint, err := strconv.Atoi(appointid)
 	if err == nil {
@@ -51,7 +77,7 @@ func HandleGetAppointment(c *gin.Context) {
 	}
 }
 
-func HandleGetPatientHistory(c *gin.Context) {
+func (ah *appointmentHandler) HandleGetPatientHistory(c *gin.Context) {
 	patid := c.Param("id")
 
 	a := datab.GetPatientHistory(patid)
@@ -65,7 +91,7 @@ func HandleGetPatientHistory(c *gin.Context) {
 	}
 }
 
-func HandleGetMaxAppointments(c *gin.Context) {
+func (ah *appointmentHandler) HandleGetMaxAppointments(c *gin.Context) {
 	appoint := datab.GetMaxAppointments()
 
 	if appoint == nil || len(appoint) == 0 {
