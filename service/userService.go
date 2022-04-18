@@ -17,6 +17,7 @@ type userService struct {
 
 func (us *userService) RegisterUser(user models.User) (*models.User, error) {
 	//TODO: call the appropriate function in the datab package from the userDB interface
+
 	return nil, nil
 }
 

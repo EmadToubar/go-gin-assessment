@@ -88,6 +88,9 @@ func (dd *doctorDB) AddDoctors(doctor models.Doctor) error {
 }
 
 func (dd *doctorDB) CheckAvailability(doctors models.Doctor, slot string) bool {
+	//Emad To-Do List:
+	//1. Change slots from strings to other form to allow for calculations
+
 	// availableSlots := []slots{}
 	//Todo: These are the steps to check if the slot is available
 	//1. Get All of the doctors  booked slots for the day

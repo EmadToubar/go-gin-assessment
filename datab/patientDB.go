@@ -3,7 +3,6 @@ package datab
 import (
 	"api_assessment/models"
 	"fmt"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -28,16 +27,7 @@ func PatientDBProvider(db *sqlx.DB) PatientDB {
 //Function to list all the patients in the DB
 func (pd *patientDB) GetPatients() []models.Patient {
 
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
-
-	db.MustExec(schema)
-
-	defer db.Close()
-
-	results, err := db.Queryx("SELECT * FROM patient")
+	results, err := pd.db.Queryx("SELECT * FROM patient")
 
 	if err != nil {
 		fmt.Println("Err", err.Error())
@@ -63,18 +53,9 @@ func (pd *patientDB) GetPatients() []models.Patient {
 //Function to get a patient by their ID from the DB
 func (pd *patientDB) GetPatient(patid string) *models.Patient {
 
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
-
-	db.MustExec(schema)
-
-	defer db.Close()
-
 	pat := &models.Patient{}
 
-	results, err := db.Queryx("SELECT * FROM patient where id=($1)", patid)
+	results, err := pd.db.Queryx("SELECT * FROM patient where id=($1)", patid)
 
 	if err != nil {
 		fmt.Println("Err", err.Error())
@@ -97,16 +78,7 @@ func (pd *patientDB) GetPatient(patid string) *models.Patient {
 //Function to add a patient to the DB
 func (pd *patientDB) AddPatients(patient models.Patient) {
 
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=testdatabase password=emadsql sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	} //Connecting to database
-
-	db.MustExec(schema)
-
-	defer db.Close()
-
-	insert, err := db.Queryx(
+	insert, err := pd.db.Queryx(
 		"INSERT INTO patient (id, name, role) VALUES (($1),($2),($3))",
 		patient.ID, patient.Name, patient.Role)
 
