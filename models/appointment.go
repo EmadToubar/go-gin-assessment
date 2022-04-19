@@ -7,7 +7,12 @@ type Appointment struct {
 	ID         int     `json:"id"`
 	DoctorID   string  `json:"doctorid"`
 	PatientID  string  `json:"patientid"`
-	Duration   string  `json:"duration"`
+	Duration   int     `json:"duration"`
 	TimeStart  string  `json:"timestart"`
 	TimeEnd    string  `json:"timeend"`
+}
+
+type CountResponse struct {
+	DoctorId string
+	Count    int
 }

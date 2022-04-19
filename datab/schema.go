@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS patient (
 );
 
 CREATE TABLE IF NOT EXISTS appointment (
-    id int,
+    time text,
+	id int,
 	doctorid text,
 	patientid text,
 	duration int,
@@ -25,10 +26,10 @@ CREATE TABLE IF NOT EXISTS appointment (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id int,
+    id text,
 	name text,
 	email text,
-	password int,
+	password text,
 	role text
 
 );
