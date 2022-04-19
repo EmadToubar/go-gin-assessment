@@ -9,7 +9,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type AppointmentDB interface{}
+type AppointmentDB interface {
+	AddAppointments(appointment models.Appointment) error
+	GetAppointments() []models.Appointment
+	GetAppointment(appointid int) *models.Appointment
+	GetPatientHistory(patientid string) []models.Appointment
+	GetMaxAppointments() []models.CountResponse
+}
 
 type appointmentDB struct {
 	db *sqlx.DB
