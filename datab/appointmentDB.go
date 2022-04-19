@@ -12,7 +12,7 @@ import (
 type AppointmentDB interface {
 	AddAppointments(appointment models.Appointment) error
 	GetAppointments() []models.Appointment
-	GetAppointment(appointid int) *models.Appointment
+	GetDocAppointment(docid string) []models.Appointment
 	GetPatientHistory(patientid string) []models.Appointment
 	GetMaxAppointments() []models.CountResponse
 }
@@ -84,11 +84,9 @@ func (ap *appointmentDB) GetAppointments() []models.Appointment {
 }
 
 //Function to get an appointment by its ID in the DB
-func (ap *appointmentDB) GetAppointment(appointid int) *models.Appointment {
+func (ap *appointmentDB) GetDocAppointment(docid string) []models.Appointment {
 
-	appoint := &models.Appointment{}
-
-	results, err := ap.db.Queryx("SELECT * FROM appointment where id=($1)", appointid)
+	results, err := ap.db.Queryx("SELECT * FROM appointment where doctorid=($1)", docid)
 	log.Println(results) //Test function REMOVE AT THE END
 
 	if err != nil {
@@ -96,14 +94,16 @@ func (ap *appointmentDB) GetAppointment(appointid int) *models.Appointment {
 		return nil
 	}
 
-	if results.Next() {
-		err = results.Scan(&appoint.Time, &appoint.ID, &appoint.DoctorID, &appoint.PatientID, &appoint.Duration, &appoint.TimeStart, &appoint.TimeEnd)
+	appoint := []models.Appointment{}
+	for results.Next() {
+		var a models.Appointment
+		// for each row, scan into the Appointment struct
+		err = results.Scan(&a.Time, &a.ID, &a.DoctorID, &a.PatientID, &a.Duration, &a.TimeStart, &a.TimeEnd)
 		if err != nil {
-			return nil
+			panic(err.Error()) // proper error handling instead of panic in your app
 		}
-	} else {
-
-		return nil
+		// append the doctor into doctors array
+		appoint = append(appoint, a)
 	}
 
 	return appoint

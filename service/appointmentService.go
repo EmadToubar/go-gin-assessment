@@ -8,7 +8,7 @@ import (
 type AppointmentService interface {
 	AddAppointments(models.Appointment) (*models.Appointment, error)
 	GetAppointments() ([]models.Appointment, error)
-	GetAppointment(int) (*models.Appointment, error)
+	GetDocAppointment(string) ([]models.Appointment, error)
 	GetPatientHistory(string) ([]models.Appointment, error)
 	GetMaxAppointments() ([]models.CountResponse, error)
 }
@@ -36,13 +36,13 @@ func (ap *appointmentService) GetAppointments() ([]models.Appointment, error) {
 	return ap.GetAppointments()
 }
 
-func (ap *appointmentService) GetAppointment(appointid int) (*models.Appointment, error) {
+func (ap *appointmentService) GetDocAppointment(docid string) ([]models.Appointment, error) {
 	// result, err := ap.GetAppointment(appointid)
 	// if err != nil {
 	// 	return nil, err
 	// }
 	// return result, nil
-	return ap.GetAppointment(appointid)
+	return ap.GetDocAppointment(docid)
 
 }
 

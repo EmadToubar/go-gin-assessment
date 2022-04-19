@@ -5,7 +5,6 @@ import (
 	"api_assessment/service"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +12,7 @@ import (
 type AppointmentHandler interface {
 	HandleAddAppointments(c *gin.Context)
 	HandleGetAppointments(c *gin.Context)
-	HandleGetAppointment(c *gin.Context)
+	HandleGetDocAppointment(c *gin.Context)
 	HandleGetPatientHistory(c *gin.Context)
 	HandleGetMaxAppointments(c *gin.Context)
 	SetupRoutes(r *gin.RouterGroup)
@@ -32,7 +31,7 @@ func AppointmentHandlerProvider(service service.AppointmentService) AppointmentH
 func (ah *appointmentHandler) SetupRoutes(r *gin.RouterGroup) {
 	r.POST("/appointments/book", ah.HandleAddAppointments)
 	r.GET("/appointments", ah.HandleGetAppointments)
-	r.GET("/appointments/:id", ah.HandleGetAppointment)
+	r.GET("/appointments/:id", ah.HandleGetDocAppointment)
 	r.GET("/appointments/:id/history", ah.HandleGetPatientHistory)
 	r.GET("/appointments/max", ah.HandleGetMaxAppointments)
 }
@@ -63,13 +62,27 @@ func (ah *appointmentHandler) HandleGetAppointments(c *gin.Context) {
 	}
 }
 
-func (ah *appointmentHandler) HandleGetAppointment(c *gin.Context) {
-	appointid := c.Param("id")
-	appointidint, err := strconv.Atoi(appointid)
-	if err == nil {
-	}
+// func (ah *appointmentHandler) HandleGetAppointment(c *gin.Context) {
+// 	appointid := c.Param("id")
+// 	appointidint, err := strconv.Atoi(appointid)
+// 	if err == nil {
+// 	}
 
-	a, err := ah.service.GetAppointment(appointidint)
+// 	a, err := ah.service.GetAppointment(appointidint)
+
+// 	log.Println(a) //Testing function REMOVE AT THE END
+
+// 	if a == nil || err != nil {
+// 		c.AbortWithStatus(http.StatusNotFound)
+// 	} else {
+// 		c.IndentedJSON(http.StatusOK, a)
+// 	}
+// }
+
+func (ah *appointmentHandler) HandleGetDocAppointment(c *gin.Context) {
+	docid := c.Param("id")
+
+	a, err := ah.service.GetDocAppointment(docid)
 
 	log.Println(a) //Testing function REMOVE AT THE END
 
