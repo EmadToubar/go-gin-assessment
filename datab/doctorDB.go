@@ -128,15 +128,30 @@ func (dd *doctorDB) CheckAvailability(doctors models.Doctor, appoint models.Appo
 	//2. Store all appointments related to doctor in doctorAppointments
 	//3. Create a for loop that goes through the appointments and sets the start time of the availableSlots as the end time of the appointment and the end time of the avaialbleSlots as the start time of the next appointment
 	//4. Return the availableSlots object
-	//doctorAppointments := dd.GetDocAppointment(docid)
-	availableSlots := [...]models.Slot{}
 
-	//Todo: These are the steps to check if the slot is available
+	//Todo (Karim's List): These are the steps to check if the slot is available
 	//1. Get All of the doctors  booked slots for the day
 	//2. calculate the difference between the doctor's first slot and the start of the day i.e. 8am and add it the available slots array
 	//3. loop through the booked slots array and calculate the difference between the end time of slot i and start time of slot (i+1)
 	//4. when you reach the last item in the booked slots array, calculate the difference between the end time of slot i and the end of the day i.e. 5pm and add it to the available slots array
 	//5. return the available slots array as this will have a list of all the available slots for the day
+
+	doctorAppointments := dd.GetDocAppointment(docid)
+	availableSlots := [...]models.Slot{}
+	for i := 0; i <= len(doctorAppointments); i++ {
+		if doctorAppointments[0].TimeStart == "8:00" && i == 0 {
+			availableSlots[0].StartTime = doctorsAppointments[0].TimeEnd
+			availableSlots[0].EndTime = doctorsAppointments[1].TimeStart
+		} else if doctorAppointments[0].TimeStart == "8:00" != i == 0 {
+			availableSlots[0].StartTime = "8:00"
+			availableSlots[0].EndTime = doctorsAppointments[0].TimeStart
+		} else {
+			availableSlots[i].StartTime = doctorAppointments[i].TimeEnd
+			availableSlots[i].EndTime = doctorAppointments[i+1].TimeStart
+		}
+
+	}
+
 	log.Println("Slot is free") //Placeholder code
 	return availableSlots[:]
 }
